@@ -3,7 +3,7 @@ from Crypto.Cipher import PKCS1_OAEP
 
 private_key = RSA.import_key(open("privateKey").read())
 decipher_rsa = PKCS1_OAEP.new(private_key)
-data_length = private_key.size_in_bytes();
+data_length = private_key.size_in_bytes()
 print(f"私钥长度:{data_length}")
 
 file_path = "cipher.data"
