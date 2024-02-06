@@ -19,13 +19,13 @@ output_filename = f"restore_{download_path}"
 cipher = AES.new(binascii.unhexlify(keys), AES.MODE_CBC,iv=binascii.unhexlify(iv))
 
 in_file_length = os.path.getsize(download_path)
-
-block_count = in_file_length / AES.block_size
+BLOCK_SIZE = AES.block_size * 1024
+block_count = in_file_length / BLOCK_SIZE
 
 count = 0
 with open(download_path, 'rb') as in_file:
     with open(output_filename, 'wb') as out_file:
-        while content := in_file.read(AES.block_size):  # 每次读取数据
+        while content := in_file.read(BLOCK_SIZE):  # 每次读取数据
             count = count + 1
             decrypted_chunk = cipher.decrypt(content)
             if(block_count == count):
