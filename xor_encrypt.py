@@ -1,10 +1,14 @@
-from Crypto.Cipher import AES
-from Crypto.Util.Padding import pad,unpad
 from Crypto.Random import get_random_bytes
+from itertools import cycle
 import binascii
 import os
 import argparse
 import time
+
+def xor_cipher(text, key):
+    #encrypted_text = ''.join(chr(ord(c) ^ ord(k)) for c, k in zip(text, cycle(key)))
+    encrypted_text = bytes([(c^k) for c, k in zip(text, cycle(key))])
+    return encrypted_text
 
 
 parser = argparse.ArgumentParser(description='Process some files.')
@@ -14,8 +18,6 @@ args = parser.parse_args()
 
 print(f"Input file: {args.input_file}")
 
-keys = '30980f98296b77f00a55f3c92b35322d898ae2ffcdb906de40336d2cf3d556a0'
-iv = 'e5889166bb98ba01e1a6bc9b32dbf3e6'
 ENCRYPT_SIZE = 1024
 BLOCK_SIZE = 16 * 1024
 download_path = args.input_file
@@ -23,7 +25,6 @@ output_filename = f"encrypt_{args.input_file}"
 
 #print(f"key lenght:{len(binascii.unhexlify(keys))}")
 
-cipher = AES.new(binascii.unhexlify(keys), AES.MODE_CBC,iv=binascii.unhexlify(iv))
 in_file_length = os.path.getsize(download_path)
 block_count = in_file_length / BLOCK_SIZE
 print(in_file_length)
@@ -36,9 +37,9 @@ with open(download_path, 'rb') as in_file:
         # 2. read 1k data
         head = in_file.read(ENCRYPT_SIZE)
         # 3. aes encrypt and write
-        hex_string = binascii.hexlify(head).decode()
-        print(f"head content:{hex_string}")
-        crypted_chunk = cipher.encrypt(pad(head,AES.block_size))
+        #hex_string = binascii.hexlify(head).decode()
+        #print(f"head content:{hex_string}")
+        crypted_chunk = xor_cipher(head,b"shgbit")
         out_file.write(crypted_chunk)
         # 4. copy other part file
         head_time = time.time() - start_time
@@ -50,4 +51,4 @@ out_file_length = os.path.getsize(output_filename)
 print(f"encrypt ok,size {out_file_length}")
 end_time = time.time()
 run_time = end_time - start_time
-print(f"部分加密运行时间: {run_time} 秒")
+print(f"按位异或加密运行时间: {run_time} 秒")
