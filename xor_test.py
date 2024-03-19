@@ -1,7 +1,6 @@
 from itertools import cycle
 
 def xor_cipher(text, key):
-    #encrypted_text = ''.join(chr(ord(c) ^ ord(k)) for c, k in zip(text, cycle(key)))
     encrypted_text = bytes([(c^k) for c, k in zip(text, cycle(key))])
     return encrypted_text
 
